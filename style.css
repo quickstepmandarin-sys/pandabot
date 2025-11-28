@@ -1,0 +1,7 @@
+body {
+  font-family: Arial;
+  max-width: 600px;
+  margin: 20px auto;
+}
+.user { color: blue; margin: 4px; }
+.bot  { color: green; margin: 4px; }
