@@ -10,34 +10,31 @@ export async function onRequestPost(context) {
       });
     }
 
-    // Call DeepSeek
+    // DeepSeek request
+    const payload = {
+      model: "deepseek-chat",
+      messages: [{ role: "user", content: message }],
+      temperature: 0.7,
+      max_tokens: 500
+    };
+
     const res = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        model: "deepseek-chat",
-        messages: [{ role: "user", content: message }]
-      })
+      body: JSON.stringify(payload)
     });
 
-    // Parse DeepSeek response safely
-    let data;
-    try {
-      data = await res.json();
-    } catch (e) {
-      const text = await res.text();
-      return new Response(JSON.stringify({
-        reply: "Error parsing DeepSeek response",
-        raw: text,
-        status: res.status
-      }), { headers: { "Content-Type": "application/json" } });
-    }
+    const data = await res.json();
 
-    const reply = data?.choices?.[0]?.message?.content ?? "No reply from DeepSeek";
-    return new Response(JSON.stringify({ reply }), {
+    // Return the first message choice
+    const reply = data?.choices?.[0]?.message?.content ??
+                  data?.message ??
+                  "No reply from DeepSeek";
+
+    return new Response(JSON.stringify({ reply, debug: data }), {
       headers: { "Content-Type": "application/json" }
     });
 
