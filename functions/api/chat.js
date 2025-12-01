@@ -3,16 +3,9 @@ export async function onRequestPost(context) {
     const { request, env } = context;
     const { message } = await request.json();
 
-    if (!message) {
-      return new Response(JSON.stringify({ reply: "No message received." }), {
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
-    // DeepSeek API
     const apiKey = env.DEEPSEEK_API_KEY;
 
-    const res = await fetch("https://api.deepseek.com/v1/chat/completions", {
+    const res = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
@@ -37,8 +30,9 @@ export async function onRequestPost(context) {
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({ reply: "Server error." }), {
-      headers: { "Content-Type": "application/json" }
-    });
+    return new Response(
+      JSON.stringify({ reply: "Function crashed." }),
+      { headers: { "Content-Type": "application/json" } }
+    );
   }
 }
