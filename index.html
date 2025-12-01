@@ -1,99 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Chatbot</title>
-  <style>
-    body {
-      margin: 0;
-      background: #f5f5f5;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    #app {
-      width: 400px;
-      height: 600px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    #chat {
-      flex: 1;
-      padding: 15px;
-      overflow-y: auto;
-    }
-
-    .msg {
-      margin-bottom: 12px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      max-width: 80%;
-      line-height: 1.4;
-      font-size: 15px;
-    }
-
-    .user {
-      background: #d1e8ff;
-      align-self: flex-end;
-    }
-
-    .bot {
-      background: #eee;
-      align-self: flex-start;
-    }
-
-    #inputArea {
-      display: flex;
-      padding: 10px;
-      border-top: 1px solid #ddd;
-      background: #fafafa;
-    }
-
-    #msg {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 15px;
-    }
-
-    button {
-      margin-left: 8px;
-      padding: 10px 16px;
-      background: #007bff;
-      color: white;
-      border: none;
-      font-size: 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      background: #005fcc;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐼 PandaBot (Puter.js Free)</title>
+<style>
+  body {
+    font-family: 'Comic Sans MS', sans-serif;
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(to bottom, #fff9e6, #ffe08c);
+  }
+  h1 { font-size: 2.5em; color: #2a9d8f; margin-bottom: 10px; }
+  #chat {
+    margin-top: 30px;
+    font-size: 18px;
+    min-height: 200px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    max-height: 400px;
+    text-align: left;
+  }
+  input, button {
+    font-size: 18px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: none;
+    margin-top: 10px;
+  }
+  button {
+    background-color: #f4a261;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  }
+  button:hover { background-color: #e76f51; }
+  input { width: 70%; }
+  .user { font-weight: bold; color: #264653; margin-bottom: 5px; }
+  .bot { font-weight: bold; color: #2a9d8f; margin-bottom: 5px; }
+</style>
 </head>
-
 <body>
-  <div id="app">
-    <div id="chat"></div>
+<h1>🐼 PandaBot (Puter.js Free)</h1>
+<p>输入中文或英文，PandaBot 会回答你！</p>
 
-    <div id="inputArea">
-      <input id="msg" placeholder="Type a message..." />
-      <button onclick="sendMsg()">Send</button>
-    </div>
-  </div>
+<input id="msg" placeholder="说点什么..." />
+<button onclick="sendMsg()">发送</button>
+<div id="chat"></div>
 
-  <script src="/chat.js"></script>
+<!-- Puter.js Free -->
+<script src="https://js.puter.com/v2/puter.js"></script>
+<script>
+async function sendMsg() {
+  const input = document.getElementById("msg");
+  const chat = document.getElementById("chat");
+  const text = input.value.trim();
+  if (!text) return;
+
+  chat.innerHTML += `<div class="user">你: ${text}</div>`;
+  chat.scrollTop = chat.scrollHeight;
+  input.value = "";
+
+  // Show temporary loading
+  const loadingId = `loading-${Date.now()}`;
+  chat.innerHTML += `<div id="${loadingId}" class="bot">PandaBot 正在思考...</div>`;
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    // Puter.js API call
+    const res = await puter.ai.chat({
+      model: "deepseek-chat",
+      messages: [{ role: "user", content: text }],
+      temperature: 0.7,
+      max_tokens: 500
+    });
+
+    const reply = res?.choices?.[0]?.message?.content || res?.message || "PandaBot 没有回复";
+    document.getElementById(loadingId).innerHTML = `🐼 PandaBot: ${reply}`;
+
+    // Speak reply
+    const utter = new SpeechSynthesisUtterance(reply);
+    utter.lang = 'zh-CN';
+    speechSynthesis.speak(utter);
+
+  } catch (err) {
+    document.getElementById(loadingId).innerHTML = `🐼 PandaBot: 错误 - ${err}`;
+    console.error(err);
+  }
+
+  chat.scrollTop = chat.scrollHeight;
+}
+</script>
 </body>
 </html>
