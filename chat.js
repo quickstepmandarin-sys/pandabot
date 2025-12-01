@@ -1,14 +1,34 @@
 async function sendMsg() {
-  const msg = document.getElementById("msg").value;
+  const input = document.getElementById("msg");
   const chat = document.getElementById("chat");
+  const text = input.value.trim();
 
-  chat.innerHTML += `<div class='user'>You: ${msg}</div>`;
+  if (!text) return;
 
+  // show user message
+  chat.innerHTML += `<div class="msg user">${text}</div>`;
+  chat.scrollTop = chat.scrollHeight;
+
+  input.value = "";
+
+  // call backend API
   const res = await fetch("/api/chat", {
     method: "POST",
-    body: JSON.stringify({ message: msg })
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message: text })
   });
 
-  const data = await res.json();
-  chat.innerHTML += `<div class='bot'>Bot: ${data.reply}</div>`;
+  let data;
+  try {
+    data = await res.json();
+  } catch (e) {
+    chat.innerHTML += `<div class="msg bot">Error parsing response.</div>`;
+    return;
+  }
+
+  // show bot reply
+  chat.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+  chat.scrollTop = chat.scrollHeight;
 }
