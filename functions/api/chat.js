@@ -21,6 +21,9 @@ export async function onRequestPost(context) {
 
     const data = await res.json();
 
+    // Debugging: print raw response to logs
+    console.log("DeepSeek raw:", JSON.stringify(data));
+
     const reply =
       data?.choices?.[0]?.message?.content ??
       "Error: No response from DeepSeek.";
@@ -30,8 +33,9 @@ export async function onRequestPost(context) {
     });
 
   } catch (err) {
+    console.error("Function crashed:", err);
     return new Response(
-      JSON.stringify({ reply: "Function crashed." }),
+      JSON.stringify({ reply: "Function crashed server-side." }),
       { headers: { "Content-Type": "application/json" } }
     );
   }
