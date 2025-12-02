@@ -3,47 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <title>Chat & Learn with Our Bot!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; background: #f5f5f5; padding: 50px; }
-    h1, h2 { color: #333; }
-    p { font-size: 18px; color: #555; }
-    button, a.book-link, a.coffee-link, a.review-link { 
-      font-size: 18px; 
-      padding: 15px 30px; 
-      margin: 10px; 
-      border: none; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      text-decoration: none; 
-      color: white; 
-      display: inline-block;
-    }
-    button { background-color: #0088cc; }
-    button:hover { background-color: #006699; }
-    .book-link { background-color: #ff6600; }
-    .book-link:hover { background-color: #cc5200; }
-    .coffee-link { background-color: #ff4f19; }
-    .coffee-link:hover { background-color: #cc3d15; }
-    .review-link { background-color: #28a745; }
-    .review-link:hover { background-color: #1e7e34; }
-    footer { margin-top: 50px; font-size: 16px; color: #333; }
+    body { font-family: 'Roboto', sans-serif; background: #f0f8ff; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; }
+    header { background: #0088cc; color:white; padding:40px; width:100%; text-align:center; }
+    header h1 { margin:0; font-size:2.5em; }
+    main { max-width:800px; width:100%; padding:20px; text-align:center; }
+    .chat-box { border:1px solid #ccc; border-radius:10px; padding:10px; height:300px; overflow-y:auto; background:white; margin-bottom:10px; }
+    .input-box { display:flex; margin-bottom:20px; }
+    .input-box input { flex:1; padding:10px; border-radius:5px 0 0 5px; border:1px solid #ccc; }
+    .input-box button { padding:10px 20px; border:none; background:#0088cc; color:white; cursor:pointer; border-radius:0 5px 5px 0; }
+    .books, .support { margin:30px 0; }
+    .books a, .support a { display:inline-block; margin:10px; padding:15px 25px; border-radius:8px; text-decoration:none; color:white; font-weight:bold; }
+    .books a { background:#ff6600; }
+    .books a:hover { background:#cc5200; }
+    .support a { background:#ff4f19; }
+    .support a:hover { background:#cc3d15; }
+    footer { margin-top:50px; padding:20px; font-size:16px; color:#333; text-align:center; }
   </style>
 </head>
 <body>
-  <h1>Welcome to Our Telegram Chatbot!</h1>
-  <p>Practice Chinese, learn new words, and have fun chatting!</p>
+  <header>
+    <h1>Chat & Learn Chinese!</h1>
+    <p>Beginner-friendly bot: mostly English, with Chinese words sprinkled in</p>
+  </header>
+  <main>
+    <div class="chat-box" id="chat-box"></div>
+    <div class="input-box">
+      <input type="text" id="user-message" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
 
-  <a href="https://t.me/YourBotUsername" target="_blank">
-    <button>Chat with Our Bot Now!</button>
-  </a>
+    <div class="books">
+      <h2>Check Out My Books!</h2>
+      <a href="https://www.amazon.com/dp/B0D9QDB6W7" target="_blank">📖 Book 1</a>
+      <a href="https://www.amazon.com/dp/B0FRMKYK2V" target="_blank">📖 Book 2</a>
+    </div>
 
-  <h2>Check Out My Books!</h2>
-  <p>Learn more about language, stories, and adventures:</p>
+    <div class="support">
+      <h2>Support My Work!</h2>
+      <a href="https://buymeacoffee.com/quickstepmandarin" target="_blank">☕ Buy Me a Coffee</a>
+    </div>
+  </main>
+  <footer>
+    Chat with the bot, explore the books, support me, and start your language journey today!<br>
+    © 2025 QuickStep Mandarin
+  </footer>
 
-  <a href="https://www.amazon.com/dp/B0D9QDB6W7" target="_blank" class="book-link">📖 Book 1</a>
-  <a href="https://www.amazon.com/dp/B0FRMKYK2V" target="_blank" class="book-link">📖 Book 2</a>
+  <script>
+    const chatBox = document.getElementById('chat-box');
 
-  <p>💡 Enjoyed the books? Your reviews help other learners discover them!</p>
-  <a href="https://www.amazon.com/review/create-review/?asin=B0D9QDB6W7" target="_blank" class="review-link">Leave a Review for Book 1</a>
-  <a href="https://www.amazon.com/review/create-review/?asin=B0FRMKYK2V" target="_blank" class="review-link">Leave a_
+    function appendMessage(sender, text) {
+      const p = document.createElement('p');
+      p.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chatBox.appendChild(p);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('user-message');
+      const message = input.value.trim();
+      if (!message) return;
+      appendMessage('You', message);
+      input.value = '';
+
+      try {
+        const res = await fetch('http://localhost:3000/send', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ message, chatId:12345 }) // temp chatId for testing
+        });
+        const data = await res.json();
+        appendMessage('Bot', data.reply);
+      } catch(err) {
+        appendMessage('Bot', 'Error connecting to server.');
+      }
+    }
+  </script>
+</body>
+</html>
+
 
