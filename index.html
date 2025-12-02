@@ -33,7 +33,6 @@
 
     footer { margin-top:50px; padding:20px; font-size:16px; color:#333; text-align:center; }
 
-    /* Clear floats */
     .chat-box::after { content:""; display:block; clear:both; }
   </style>
 </head>
@@ -78,9 +77,7 @@
 
   <script>
     const chatBox = document.getElementById('chat-box');
-
-    // Your Cloudflare Worker URL - deploy the Worker below
-    const WORKER_URL = "https://gamelinearbot.workers.dev";
+    const WORKER_URL = "https://patient-heart-56b3.quickstepmandarin.workers.dev/";
 
     function appendMessage(sender, text, type) {
       const p = document.createElement('div');
@@ -103,7 +100,7 @@
           headers: {'Content-Type':'application/json'},
           body: JSON.stringify({
             message,
-            chatId: 8345128605 // Your Telegram bot chat ID
+            chatId: 8345128605 // your Telegram chat ID
           })
         });
         const data = await res.json();
